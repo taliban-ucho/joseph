@@ -1,67 +1,97 @@
-import { useState } from "react";
-import axios from "axios";
+// Signin.js
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { motion } from 'framer-motion';
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+const Signin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  // Helper function to store the user in local storage
+  const setUser = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
+  const submit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
-    setError("");
+    setLoading('Please wait as we log you in...');
+    setError('');
 
     try {
       const data = new FormData();
-      data.append("email", email);
+      data.append('email', email);
+      data.append('password', password);
 
-      const response = await axios.post("https://taliban.pythonanywhere.com/api/forgot-password", data);
+      const response = await axios.post('https://taliban.pythonanywhere.com/api/signin', data);
+      setLoading('');
 
-      if (response.data.success) {
-        setMessage("A password reset link has been sent to your email.");
+      if (response.data.user) {
+        // Store the user (and its user_id) in local storage
+        setUser(response.data.user);
+        navigate('/');
       } else {
-        setError(response.data.message || "Something went wrong.");
+        setError(response.data.Message || 'User not found');
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      setLoading('');
+      setError(err.response?.data?.Message || 'An error occurred. Please try again.');
     }
   };
 
   return (
-    <div className="row justify-content-center mt-4">
-      <div className="col-md-6 card shadow p-4">
-        <h3>Forgot Password</h3>
-        <form onSubmit={handleSubmit}>
-          {loading && (
-            <div className="text-center">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          )}
-          {message && <div className="alert alert-success">{message}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
-
+    <motion.div
+      className="row justify-content-center mt-5"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div className="card shadow col-md-6 p-4">
+        <h2>Sign In</h2>
+        {loading && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-info">
+            {loading}
+          </motion.div>
+        )}
+        {error && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-danger">
+            {error}
+          </motion.div>
+        )}
+        <form onSubmit={submit}>
           <input
             type="email"
+            placeholder="Enter your email address here"
             className="form-control"
-            placeholder="Enter your registered email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <br />
-          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
-            Send Reset Link
-          </button>
+          <input
+            type="password"
+            placeholder="Enter the password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <br /><br />
+          <motion.button
+            type="submit"
+            className="btn btn-success"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Sign In
+          </motion.button>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-export default ForgotPassword;
+export default Signin;

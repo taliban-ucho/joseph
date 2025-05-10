@@ -10,3 +10,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.footer-background-color {
+  background-color: #212529; /* Darker shade */
+}
+
+.socialspictures {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.socialspictures:hover {
+  transform: scale(1.1);
+}
+

@@ -35,7 +35,7 @@ const Signup = () => {
       //After data has been posted, set success hook variable to empty
       setLoading("");
       //Update success hook with a success message
-      setSuccess(response.data.message);
+      setSuccess(response.data.Message);
 
 
       // Clear form fields
@@ -55,11 +55,14 @@ const Signup = () => {
     <div className="row justify-content-center mt-4">
       <div className="col-md-6 card shadow p-4">
            
-            <h2>Sign Up</h2>
+            <h2 className="text-center">Sign Up</h2>
             <form onSubmit={submit}>
-                {loading}
-                {success}
-                {error}
+            
+                
+               
+                <b className="text-warning text-center">{loading}</b>
+                <b className="text-success text-center">{success}</b>
+                <b className="text-danger text-center"> {error}</b>
              
                 <input
                   type="text"
@@ -69,7 +72,7 @@ const Signup = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                 /> <br />
-                {username}
+                {/* {username} */}
              
              
                 <input

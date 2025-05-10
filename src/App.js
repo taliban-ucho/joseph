@@ -2,7 +2,9 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import 'font-awesome/css/font-awesome.min.css';
 
+import React, { useState } from 'react';
 import Addproducts from './components/Addproducts';
 import Signin from './components/Signin';
 import Signup from './components/Signup';
@@ -13,7 +15,11 @@ import Aboutus from './components/Aboutus';
 import ChatBot from './components/Chat';
 import Cart from './components/Cart';
 
+import "@fortawesome/fontawesome-free/css/all.min.css"
+
 function App() {
+  const [cartItemCount, setCartItemCount] = useState(0);
+
   return (
     <Router>
       <div className="App">
@@ -26,8 +32,8 @@ function App() {
           <Route path='/signup' element={<Signup />} />
           <Route path='/makepayment' element={<Makepayment />} />
           <Route path='/aboutus' element={<Aboutus />} />
-          <Route path='/chat'element={<ChatBot/>}/>
-          <Route path='/cart'element={<Cart/>}/>
+          <Route path='/chat' element={<ChatBot />} />
+          <Route path='/cart' element={<Cart setCartItemCount={setCartItemCount} />} />
         </Routes>
       </div>
     </Router>

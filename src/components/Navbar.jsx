@@ -1,33 +1,42 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { motion } from "framer-motion";
+import "font-awesome/css/font-awesome.min.css";
 
-const Navbar = () => {
+const Navbar = ({ cartItemCount }) => {
   const [cartCount, setCartCount] = useState(0);
+  const location = useLocation();
 
-  // Fetch the cart items count from the API
-  const fetchCartCount = async () => {
-    try {
-      const response = await axios.get("https://taliban.pythonanywhere.com/api/cart/");
-      setCartCount(response.data.length); // Set count based on cart items length
-    } catch (error) {
-      console.error("Failed to fetch cart count", error);
-    }
-  };
 
-  // Call the fetchCartCount function whenever the Navbar loads
+
   useEffect(() => {
-    fetchCartCount();
-  }, []);
+    const updateCartCount = () => {
+      const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+      setCartCount(cartItems.length);
+    };
 
+    // Initial load
+    updateCartCount();
+
+    // Listen for custom "cartUpdated" event
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
+  }, [location]);
   return (
-    <nav className="navbar navbar-expand-md navbar-light bg-light shadow-sm mt-1">
-      {/* Brand Logo */}
+    <motion.nav
+      className="navbar navbar-expand-md navbar-light bg-light shadow-sm mt-1"
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Link to="/" className="navbar-brand fw-bold">
-        veduras<span className="text-danger">farm</span>
+        veduras<span className="text-primary">Farm</span>
       </Link>
 
-      {/* Mobile Menu Button */}
       <button
         className="navbar-toggler"
         type="button"
@@ -37,46 +46,49 @@ const Navbar = () => {
         <span className="navbar-toggler-icon"></span>
       </button>
 
-      {/* Navbar Links */}
       <div className="collapse navbar-collapse" id="navbarcontents">
         <ul className="navbar-nav me-auto">
           <li className="nav-item">
-            <b><Link to="/" className="nav-link">Get Vegetables</Link></b>
+            <b><Link to="/" className="nav-link">MY SOKO</Link></b>
           </li>
           <li className="nav-item">
-            <b><Link to="/addproducts" className="nav-link">Add Vegetable</Link></b>
+            <b><Link to="/addproducts" className="nav-link">Add veges </Link></b>
+          </li>
+          <li className="nav-item">
+            <b><Link to="/aboutus" className="nav-link">know verduras</Link></b>
           </li>
         </ul>
 
-        {/* View Cart Link with Badge */}
         <ul className="navbar-nav ms-auto">
+        
+
+          {/* Cart Icon with Dynamic Badge */}
           <li className="nav-item">
-            <Link to="/cart" className="btn btn-outline-secondary position-relative">
-              🛒 View Cart
-              {cartCount > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+              <b>
+                <Link to="/cart" className="nav-link d-flex align-items-center">
+                  <i className="fas fa-shopping-cart me-1"></i>
+                  Cart
+                  {cartCount > 0 && (
+                    <span className="badge bg-danger ms-2">{cartCount}</span>
+                  )}
+                </Link>
+              </b>
+            </li>
+            <li className="nav-item">
+            <Link to="/signin" className="btn btn-outline-primary me-2">Login</Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/signup" className="btn btn-outline-primary me-2">Register</Link>
           </li>
 
-          {/* Authorization Links */}
           <li className="nav-item">
-            <b><Link to="/aboutus" className="nav-link">About Us</Link></b>
-          </li>
-          <li className="nav-item">
-            <b><Link to="/chat" className="nav-link">Chat Us</Link></b>
-          </li>
-          <li className="nav-item">
-            <Link to="/signin" className="btn btn-outline-primary me-2">Sign In</Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+            <Link to="/profile" className="btn btn-outline-primary">
+              <i className="fa fa-user"></i>
+            </Link>
           </li>
         </ul>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
